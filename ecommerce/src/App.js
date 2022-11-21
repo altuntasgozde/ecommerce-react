@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { NavbarItem } from "./NavbarItem";
-import Card from "react-bootstrap/Card";
 import axios from "axios";
+import { Routes, Route } from "react-router-dom";
+import { Home } from "./pages/Home";
+import { Cart } from "./pages/Cart";
 import "./App.css";
 
 function App() {
   const [data, setData] = useState([]);
+  const [cartArray, setCartArray] = useState([]);
 
   useEffect(() => {
     axios
@@ -13,22 +15,27 @@ function App() {
       .then((response) => setData(response.data.data));
   }, []);
 
+  const AddCart = (id) => {
+    const product = data.filter((item) => item.id == id);
+
+    if (cartArray.some((item) => item.id == id)) {
+      product[0].attributes.count++;
+    } else {
+      setCartArray((oldArray) => [...oldArray, product[0]]);
+      product[0].attributes.count++;
+    }
+  };
+
+  const DeleteProduct = (id) => {
+    setCartArray(cartArray.filter(item => item.id !== id))
+  }
+
   return (
     <div className="App">
-      <NavbarItem />
-      {data.map((item) => (
-        <div key={item.id}>
-          <Card style={{ width: "18rem" }}>
-            <Card.Body>
-              <Card.Title>{item.attributes.title}</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">
-                {item.attributes.price}
-              </Card.Subtitle>
-              <Card.Text>{item.attributes.features}</Card.Text>
-            </Card.Body>
-          </Card>
-        </div>
-      ))}
+      <Routes>
+        <Route path="/" element={<Home AddCart={AddCart} data={data} />} />
+        <Route path="/cart" element={<Cart cartArray={cartArray} DeleteProduct={DeleteProduct}/>} />
+      </Routes>
     </div>
   );
 }
