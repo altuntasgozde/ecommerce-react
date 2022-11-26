@@ -22,6 +22,9 @@ export const NavbarItem = () => {
             <Link to="/cart">
               Cart
             </Link>
+            <Link to="/newproduct">
+              +New Product
+            </Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
